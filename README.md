@@ -96,9 +96,9 @@ Download the archive for your system and `SHA256SUMS` from the [latest GitHub Re
 | Linux x86_64 | `potoo-gportugol-interpreter-v0.1.0-x86_64-unknown-linux-gnu.tar.gz` |
 | Windows x86_64 | `potoo-gportugol-interpreter-v0.1.0-x86_64-pc-windows-msvc.zip` |
 | macOS Intel | `potoo-gportugol-interpreter-v0.1.0-x86_64-apple-darwin.tar.gz` |
-| macOS Apple silicon | `potoo-gportugol-interpreter-v0.1.0-aarch64-apple-darwin.tar.gz` |
 
-CI passes on Linux x86_64, Windows x86_64, macOS Intel, and macOS Apple silicon. The release workflow is configured to build archives for these four targets; binary assets have not been published yet.
+
+Current CI and release targets are Linux x86_64, Windows x86_64, and macOS Intel (x86_64). Apple silicon (arm64) is not supported in this release; support may be added in a future version.
 
 ### Linux x86_64
 
@@ -130,12 +130,12 @@ Expand-Archive ".\$asset" -DestinationPath .\potoo-gportugol-interpreter
 
 To run `potoo-gportugol.exe` from any folder, add its extracted directory to your user `PATH` in Windows Environment Variables.
 
-### macOS Intel and Apple silicon
+### macOS Intel
 
-Use the `x86_64-apple-darwin` archive on Intel Macs and `aarch64-apple-darwin` on Apple silicon.
+This release supports Intel Macs only. Apple silicon is not supported in this version.
 
 ```sh
-asset=potoo-gportugol-interpreter-v0.1.0-<target>.tar.gz
+asset=potoo-gportugol-interpreter-v0.1.0-x86_64-apple-darwin.tar.gz
 release=https://github.com/diegopn/potoo-gportugol-interpreter/releases/download/v0.1.0
 curl -fLO "$release/$asset"
 curl -fLO "$release/SHA256SUMS"
@@ -146,7 +146,7 @@ install -m 755 "${asset%.tar.gz}/potoo-gportugol" "$HOME/.local/bin/potoo-gportu
 potoo-gportugol example.gpt
 ```
 
-Replace `<target>` with `x86_64-apple-darwin` or `aarch64-apple-darwin`. Add it for the current shell with `export PATH="$HOME/.local/bin:$PATH"`; place that line in `~/.zprofile` to keep it for future macOS sessions.
+Add it for the current shell with `export PATH="$HOME/.local/bin:$PATH"`; place that line in `~/.zprofile` to keep it for future macOS sessions.
 
 ## Install from source
 
