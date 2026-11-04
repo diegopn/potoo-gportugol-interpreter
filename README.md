@@ -57,7 +57,7 @@ The documented 1.4.0 language is the compatibility target. The upstream `gpt` ex
 
 The crate API supports GPT's multi-file source composition when the host supplies the main file and its function-only source files. The IDE currently sends the active `.gpt` document as a single source; it does not yet provide project-level module selection or source-aware navigation for external functions.
 
-Linux is the platform used for the current build and test run. Windows and macOS have not yet been built or exercised; the crate itself uses only the Rust standard library, but those platforms are not claimed as verified here.
+The current releases target Linux x86_64 (GNU), Windows x86_64 (MSVC), and macOS Intel (x86_64). Apple silicon (arm64) is not supported in this version.
 
 ## Development
 
