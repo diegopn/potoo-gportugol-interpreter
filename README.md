@@ -2,6 +2,13 @@
 
 An independent Rust interpreter library for the G-Portugol 1.4.0 language. G-Portugol source files use the `.gpt` extension and remain separate from Portugol 2.0 (`.por`), VisuAlg (`.alg`), and Potigol (`.poti`). The crate can be embedded in Rust applications; it includes a standalone terminal command-line runner.
 
+## Original language references
+
+- [G-Portugol project site and online manual](https://gportugol.github.io/)
+- [Upstream GPT compiler and interpreter](https://github.com/gportugol/gpt)
+
+These are the original language and implementation references for compatibility work. This repository provides an independent Rust implementation.
+
 ## Language coverage
 
 The implementation follows the G-Portugol 1.4.0 manual and grammar for declarations, primitive types, expressions and conversions, integer division, `imprima`, typed `leia()`, conditionals, loops, vectors, matrices, and functions. It provides lexer, parser, type checking, runtime diagnostics with source locations, execution limits, cancellation, host-controlled input/output, and debugger events. The language defines `imprima` and `leia()` as intrinsic functions; Potoo also embeds an independent Rust implementation of the default `base.gpt` math library (`absoluto`, `arredonda`, `potencia`, and `raiz_quadrada`).
@@ -165,6 +172,10 @@ potoo-gportugol-interpreter = { git = "https://github.com/diegopn/potoo-gportugo
 
 The library API lets Rust applications provide their own `RuntimeIo` implementation.
 
-## DOI
+## DOI and citation
 
-A stable Figshare DOI will be added when the first public release is published.
+DOI: [10.6084/m9.figshare.34914234](https://doi.org/10.6084/m9.figshare.34914234)
+
+Suggested reference (ABNT NBR 6023:2018):
+
+> NASCIMENTO, Diego Pereira do. *G-Portugol interpreter v0.1.0*. 2026. Programa de computador. Disponível em: https://doi.org/10.6084/m9.figshare.34914234. Acesso em: 4 nov. 2026.
