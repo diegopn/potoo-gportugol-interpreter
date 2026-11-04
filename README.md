@@ -34,7 +34,7 @@ The crate has no third-party dependencies. Add the pinned Git dependency below t
 
 ```toml
 [dependencies]
-potoo-gportugol-interpreter = { git = "https://github.com/diegopn/potoo-gportugol-interpreter.git", tag = "v0.1.0" }
+potoo-gportugol-interpreter = { git = "https://github.com/diegopn/potoo-gportugol-interpreter.git", rev = "795e262f4ac160b720266e149d8fc3e2cd916a1c" }
 ```
 
 The main APIs are:
@@ -89,7 +89,7 @@ The terminal runner provides standard input/output and does not provide an inter
 
 ## Install a prebuilt runner
 
-Download the archive for your system and `SHA256SUMS` from the [latest GitHub Release](https://github.com/diegopn/potoo-gportugol-interpreter/releases/latest). The first release is tagged `v0.1.0` and uses these asset names:
+Download the archive for your system and `SHA256SUMS` from the [latest GitHub Release](https://github.com/diegopn/potoo-gportugol-interpreter/releases/latest). Binary releases are not published yet. The planned first release will be tagged `v0.1.0`; its release workflow is configured to produce these asset names:
 
 | System | Archive |
 | --- | --- |
@@ -98,7 +98,7 @@ Download the archive for your system and `SHA256SUMS` from the [latest GitHub Re
 | macOS Intel | `potoo-gportugol-interpreter-v0.1.0-x86_64-apple-darwin.tar.gz` |
 | macOS Apple silicon | `potoo-gportugol-interpreter-v0.1.0-aarch64-apple-darwin.tar.gz` |
 
-The Linux archive targets glibc 2.35 or later and is built on Ubuntu 22.04. Linux x86_64 is the only target verified in this source snapshot; Windows and macOS builds and CLI tests must pass on native runners before their release archives are published.
+CI passes on Linux x86_64, Windows x86_64, macOS Intel, and macOS Apple silicon. The release workflow is configured to build archives for these four targets; binary assets have not been published yet.
 
 ### Linux x86_64
 
@@ -153,14 +153,14 @@ Replace `<target>` with `x86_64-apple-darwin` or `aarch64-apple-darwin`. Add it 
 With Rust 1.93 or later and network access, Cargo can install the command directly from its tagged source:
 
 ```sh
-cargo install --git https://github.com/diegopn/potoo-gportugol-interpreter.git --tag v0.1.0 --bin potoo-gportugol
+cargo install --git https://github.com/diegopn/potoo-gportugol-interpreter.git --rev 795e262f4ac160b720266e149d8fc3e2cd916a1c --bin potoo-gportugol
 ```
 
 ## Use as a Rust library
 
 ```toml
 [dependencies]
-potoo-gportugol-interpreter = { git = "https://github.com/diegopn/potoo-gportugol-interpreter.git", tag = "v0.1.0" }
+potoo-gportugol-interpreter = { git = "https://github.com/diegopn/potoo-gportugol-interpreter.git", rev = "795e262f4ac160b720266e149d8fc3e2cd916a1c" }
 ```
 
 The library API lets Rust applications provide their own `RuntimeIo` implementation.
