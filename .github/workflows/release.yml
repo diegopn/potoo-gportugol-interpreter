@@ -85,7 +85,10 @@ jobs:
           else
             gh release create "$tag" *.tar.gz *.zip SHA256SUMS \
               --repo "$GITHUB_REPOSITORY" \
-              --target "$GITHUB_SHA" \
-              --title "potoo-gportugol-interpreter $tag" \
-              --notes "The platform archives contain only the compiled CLI executable. Verify downloads with SHA256SUMS. GitHub source snapshots are separate and are not executable packages."
+                            --title "G-Portugol interpreter $tag"
+                            --notes "Initial standalone binary release of the G-Portugol Rust interpreter and CLI.
+
+Includes executables for Linux x86_64 (GNU), Windows x86_64 (MSVC), macOS Intel (x86_64), and macOS Apple silicon (aarch64). Each platform archive contains only the compiled CLI executable. See README.md for installation and usage. Verify downloads with SHA256SUMS.
+
+GitHub source snapshots are generated separately and are not included in the executable packages."
           fi
