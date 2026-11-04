@@ -4,6 +4,13 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to build
+        required: true
+        type: string
+        default: v0.1.0
 
 permissions:
   contents: write
@@ -25,6 +32,8 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo test --all-targets
       - run: cargo build --release --bin potoo-gportugol
@@ -33,20 +42,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          version="${GITHUB_REF_NAME}"
+          version="${{ github.event.inputs.tag || github.ref_name }}"
           bundle="potoo-gportugol-interpreter-${version}-${{ matrix.target }}"
           mkdir -p "$bundle"
           cp "target/release/potoo-gportugol" "$bundle/"
-          cp README.md LICENSE "$bundle/"
           tar -czf "$bundle.tar.gz" "$bundle"
       - name: Package Windows archive
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $version = $env:GITHUB_REF_NAME
+          $version = "${{ github.event.inputs.tag || github.ref_name }}"
           $bundle = "potoo-gportugol-interpreter-$version-${{ matrix.target }}"
           New-Item -ItemType Directory -Force $bundle | Out-Null
-          Copy-Item "target/release/potoo-gportugol.exe", "README.md", "LICENSE" -Destination $bundle
+          Copy-Item "target/release/potoo-gportugol.exe" -Destination $bundle
           Compress-Archive -Path $bundle -DestinationPath "$bundle.zip"
       - uses: actions/upload-artifact@v4
         with:
@@ -67,15 +75,16 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          tag="${{ github.event.inputs.tag || github.ref_name }}"
           cd release-assets
           sha256sum *.tar.gz *.zip > SHA256SUMS
-          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" *.tar.gz *.zip SHA256SUMS \
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$tag" *.tar.gz *.zip SHA256SUMS \
               --repo "$GITHUB_REPOSITORY" \
               --clobber
           else
-            gh release create "$GITHUB_REF_NAME" *.tar.gz *.zip SHA256SUMS \
+            gh release create "$tag" *.tar.gz *.zip SHA256SUMS \
               --repo "$GITHUB_REPOSITORY" \
-              --title "potoo-gportugol-interpreter $GITHUB_REF_NAME" \
-              --generate-notes
+              --title "potoo-gportugol-interpreter $tag" \
+              --notes "The platform archives contain only the compiled CLI executable. Verify downloads with SHA256SUMS. GitHub source snapshots are separate and are not executable packages."
           fi
