@@ -98,6 +98,8 @@ Download the archive for your system and `SHA256SUMS` from the [latest GitHub Re
 | macOS Intel | `potoo-gportugol-interpreter-v0.1.0-x86_64-apple-darwin.tar.gz` |
 | macOS Apple silicon | `potoo-gportugol-interpreter-v0.1.0-aarch64-apple-darwin.tar.gz` |
 
+The Linux archive targets glibc 2.35 or later and is built on Ubuntu 22.04. Linux x86_64 is the only target verified in this source snapshot; Windows and macOS builds and CLI tests must pass on native runners before their release archives are published.
+
 ### Linux x86_64
 
 ```sh
