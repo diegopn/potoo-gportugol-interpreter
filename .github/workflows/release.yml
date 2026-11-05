@@ -1,6 +1,11 @@
 name: Release
 
 on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
   push:
     tags:
       - "v*"
@@ -17,6 +22,7 @@ permissions:
 
 jobs:
   build:
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     strategy:
       fail-fast: false
       matrix:
@@ -41,6 +47,9 @@ jobs:
         run: |
           set -euo pipefail
           version="${{ github.event.inputs.tag || github.ref_name }}"
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)"
+          fi
           bundle="potoo-gportugol-interpreter-${version}-${{ matrix.target }}"
           mkdir -p "$bundle"
           cp "target/release/potoo-gportugol" "$bundle/"
@@ -50,6 +59,9 @@ jobs:
         shell: pwsh
         run: |
           $version = "${{ github.event.inputs.tag || github.ref_name }}"
+          if ($env:GITHUB_EVENT_NAME -eq "pull_request") {
+            $version = (Select-String -Path Cargo.toml -Pattern '^version = "([^"]+)"').Matches[0].Groups[1].Value
+          }
           $bundle = "potoo-gportugol-interpreter-$version-${{ matrix.target }}"
           New-Item -ItemType Directory -Force $bundle | Out-Null
           Copy-Item "target/release/potoo-gportugol.exe" -Destination $bundle
@@ -61,6 +73,7 @@ jobs:
           if-no-files-found: error
 
   publish:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
     needs: build
     runs-on: ubuntu-24.04
     steps:
