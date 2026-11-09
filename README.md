@@ -1,6 +1,21 @@
-# Potoo G-Portugol Interpreter
+<h1 align="center">Potoo G-Portugol Interpreter</h1>
 
-An independent Rust interpreter library for the G-Portugol 1.4.0 language. G-Portugol source files use the `.gpt` extension and remain separate from Portugol 2.0 (`.por`), VisuAlg (`.alg`), and Potigol (`.poti`). The crate can be embedded in Rust applications; it includes a standalone terminal command-line runner.
+<p align="center">An independent Rust interpreter library and CLI for G-Portugol 1.4.0.</p>
+
+<p align="center">
+  <a href="https://github.com/diegopn/potoo-gportugol-interpreter/releases/latest">Download</a> ·
+  <a href="https://diegopn.github.io/potoo-site/">Website</a> ·
+  <a href="https://diegopn.github.io/potoo-site/manual/g-portugol/">User manual</a>
+</p>
+
+<p align="center">
+  <a href="https://www.rust-lang.org/"><img alt="Rust" src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white"></a>
+  <a href="https://doc.rust-lang.org/cargo/"><img alt="Cargo" src="https://img.shields.io/badge/Cargo-DEA584?style=for-the-badge&logo=rust&logoColor=white"></a>
+  <img alt="Rust library" src="https://img.shields.io/badge/Rust_library-4A86CF?style=for-the-badge">
+  <img alt="CLI" src="https://img.shields.io/badge/CLI-6A4C93?style=for-the-badge">
+</p>
+
+G-Portugol source files use `.gpt` and remain separate from Portugol 2.0 (`.por`), VisuAlg (`.alg`), and Potigol (`.poti`). The crate can be embedded in Rust applications.
 
 ## Original language references
 
@@ -64,7 +79,7 @@ The documented 1.4.0 language is the compatibility target. The upstream `gpt` ex
 
 The crate API supports GPT's multi-file source composition when the host supplies the main file and its function-only source files. The IDE currently sends the active `.gpt` document as a single source; it does not yet provide project-level module selection or source-aware navigation for external functions.
 
-The current releases target Linux x86_64 (GNU), Windows x86_64 (MSVC), and macOS Intel (x86_64). Apple silicon (arm64) is not supported in this version.
+The current prebuilt packages target Linux x86_64 (GNU), Windows x86_64 (MSVC), and Intel macOS (x86_64); this release has no Apple silicon package.
 
 ## Development
 
@@ -81,6 +96,8 @@ cargo test
 This crate is licensed under GPL-3.0-or-later. It is an independent implementation: it neither invokes nor bundles the upstream `gpt` executable and does not reuse upstream implementation code.
 
 ## Project policies
+
+- [Code of conduct](CODE_OF_CONDUCT.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 
@@ -96,64 +113,52 @@ The terminal runner provides standard input/output and does not provide an inter
 
 ## Install a prebuilt runner
 
-Download the archive for your system and `SHA256SUMS` from the [latest GitHub Release](https://github.com/diegopn/potoo-gportugol-interpreter/releases/latest). Binary releases are not published yet. The planned first release will be tagged `v0.1.0`; its release workflow is configured to produce these asset names:
+Prebuilt binaries are published on the [GitHub Releases page](https://github.com/diegopn/potoo-gportugol-interpreter/releases). Choose a version and the package for your system there. Packages are currently available for Linux x86_64, Windows x86_64 (MSVC), and Intel macOS (x86_64). The current release does not include an Apple silicon (arm64) package.
 
-| System | Archive |
-| --- | --- |
-| Linux x86_64 | `potoo-gportugol-interpreter-v0.1.0-x86_64-unknown-linux-gnu.tar.gz` |
-| Windows x86_64 | `potoo-gportugol-interpreter-v0.1.0-x86_64-pc-windows-msvc.zip` |
-| macOS Intel | `potoo-gportugol-interpreter-v0.1.0-x86_64-apple-darwin.tar.gz` |
-
-
-Current CI and release targets are Linux x86_64, Windows x86_64, and macOS Intel (x86_64). Apple silicon (arm64) is not supported in this release; support may be added in a future version.
+Download only the package for your system and the `SHA256SUMS` file, and save both in the same folder. Before extracting or running the executable, compare the package's SHA-256 hash with its corresponding entry in `SHA256SUMS`. Run the commands below from that folder. Replace `example.gpt` with the path to a source file you want to run; the release package does not include a sample file.
 
 ### Linux x86_64
 
 ```sh
-asset=potoo-gportugol-interpreter-v0.1.0-x86_64-unknown-linux-gnu.tar.gz
-release=https://github.com/diegopn/potoo-gportugol-interpreter/releases/download/v0.1.0
-curl -fLO "$release/$asset"
-curl -fLO "$release/SHA256SUMS"
+asset=$(ls -1 potoo-gportugol-interpreter-v*-x86_64-unknown-linux-gnu.tar.gz | head -n 1)
 sha256sum "$asset" # compare with its line in SHA256SUMS
 tar -xzf "$asset"
 mkdir -p "$HOME/.local/bin"
-install -m 755 "potoo-gportugol-interpreter-v0.1.0-x86_64-unknown-linux-gnu/potoo-gportugol" "$HOME/.local/bin/potoo-gportugol"
+install -m 755 "${asset%.tar.gz}/potoo-gportugol" "$HOME/.local/bin/potoo-gportugol"
+export PATH="$HOME/.local/bin:$PATH"
 potoo-gportugol example.gpt
 ```
 
-Add it for the current shell with `export PATH="$HOME/.local/bin:$PATH"`; place that line in your shell profile to keep it for future sessions.
+To keep the command available in new Linux sessions, add the `export PATH="$HOME/.local/bin:$PATH"` line to your shell profile.
 
 ### Windows x86_64 (PowerShell)
 
 ```powershell
-$asset = "potoo-gportugol-interpreter-v0.1.0-x86_64-pc-windows-msvc.zip"
-$release = "https://github.com/diegopn/potoo-gportugol-interpreter/releases/download/v0.1.0"
-Invoke-WebRequest "$release/$asset" -OutFile $asset
-Invoke-WebRequest "$release/SHA256SUMS" -OutFile SHA256SUMS
-Get-FileHash ".\$asset" -Algorithm SHA256 # compare with the matching SHA256SUMS entry
-Expand-Archive ".\$asset" -DestinationPath .\potoo-gportugol-interpreter
-.\potoo-gportugol-interpreter\potoo-gportugol-interpreter-v0.1.0-x86_64-pc-windows-msvc\potoo-gportugol.exe .\example.gpt
+$archive = Get-ChildItem -Filter "potoo-gportugol-interpreter-v*-x86_64-pc-windows-msvc.zip" | Select-Object -First 1
+Get-FileHash $archive.FullName -Algorithm SHA256 # compare with the matching SHA256SUMS entry
+Expand-Archive $archive.FullName -DestinationPath .\potoo-gportugol
+$exe = Get-ChildItem .\potoo-gportugol -Filter "potoo-gportugol.exe" -Recurse | Select-Object -First 1
+& $exe.FullName .\example.gpt
 ```
 
-To run `potoo-gportugol.exe` from any folder, add its extracted directory to your user `PATH` in Windows Environment Variables.
+To run `potoo-gportugol.exe` from another folder, add the directory containing the executable to your user `PATH`.
 
-### macOS Intel
+### Intel macOS
 
-This release supports Intel Macs only. Apple silicon is not supported in this version.
+The published macOS package targets Intel Macs (x86_64). There is no prebuilt Apple silicon package in the current release.
 
 ```sh
-asset=potoo-gportugol-interpreter-v0.1.0-x86_64-apple-darwin.tar.gz
-release=https://github.com/diegopn/potoo-gportugol-interpreter/releases/download/v0.1.0
-curl -fLO "$release/$asset"
-curl -fLO "$release/SHA256SUMS"
+asset=$(ls -1 potoo-gportugol-interpreter-v*-x86_64-apple-darwin.tar.gz | head -n 1)
 shasum -a 256 "$asset" # compare with its line in SHA256SUMS
 tar -xzf "$asset"
 mkdir -p "$HOME/.local/bin"
 install -m 755 "${asset%.tar.gz}/potoo-gportugol" "$HOME/.local/bin/potoo-gportugol"
+export PATH="$HOME/.local/bin:$PATH"
 potoo-gportugol example.gpt
 ```
 
-Add it for the current shell with `export PATH="$HOME/.local/bin:$PATH"`; place that line in `~/.zprofile` to keep it for future macOS sessions.
+Add the `export PATH="$HOME/.local/bin:$PATH"` line to `~/.zprofile` to keep the command available in future macOS sessions.
+
 
 ## Install from source
 
@@ -171,6 +176,14 @@ potoo-gportugol-interpreter = { git = "https://github.com/diegopn/potoo-gportugo
 ```
 
 The library API lets Rust applications provide their own `RuntimeIo` implementation.
+
+## Support
+
+If this interpreter is useful in your work, you can support its continued development:
+
+<p align="left">
+  <a href="https://github.com/sponsors/diegopn"><img alt="Become a sponsor" src="https://img.shields.io/badge/Become_a_sponsor-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white"></a>
+</p>
 
 ## DOI and citation
 
