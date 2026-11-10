@@ -28,13 +28,6 @@ G-Portugol source files use `.gpt` and remain separate from Portugol 2.0 (`.por`
 
 These are the original language and implementation references for compatibility work. This repository provides an independent Rust implementation.
 
-## Original language references
-
-- [G-Portugol project site and online manual](https://gportugol.github.io/)
-- [Upstream GPT compiler and interpreter](https://github.com/gportugol/gpt)
-
-These are the original language and implementation references for compatibility work. This repository provides an independent Rust implementation.
-
 ## Language coverage
 
 The implementation follows the G-Portugol 1.4.0 manual and grammar for declarations, primitive types, expressions and conversions, integer division, `imprima`, typed `leia()`, conditionals, loops, vectors, matrices, and functions. It provides lexer, parser, type checking, runtime diagnostics with source locations, execution limits, cancellation, host-controlled input/output, and debugger events. The language defines `imprima` and `leia()` as intrinsic functions; Potoo also embeds an independent Rust implementation of the default `base.gpt` math library (`absoluto`, `arredonda`, `potencia`, and `raiz_quadrada`).
@@ -105,6 +98,14 @@ cargo test
 ## License
 
 This crate is licensed under GPL-3.0-or-later. It is an independent implementation: it neither invokes nor bundles the upstream `gpt` executable and does not reuse upstream implementation code.
+
+## Support
+
+If this interpreter is useful in your work, you can support its continued development:
+
+<p align="left">
+  <a href="https://github.com/sponsors/diegopn"><img alt="Become a sponsor" src="https://img.shields.io/badge/Become_a_sponsor-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white"></a>
+</p>
 
 ## Project policies
 
@@ -187,14 +188,6 @@ potoo-gportugol-interpreter = { git = "https://github.com/diegopn/potoo-gportugo
 ```
 
 The library API lets Rust applications provide their own `RuntimeIo` implementation.
-
-## Support
-
-If this interpreter is useful in your work, you can support its continued development:
-
-<p align="left">
-  <a href="https://github.com/sponsors/diegopn"><img alt="Become a sponsor" src="https://img.shields.io/badge/Become_a_sponsor-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white"></a>
-</p>
 
 ## DOI and citation
 
