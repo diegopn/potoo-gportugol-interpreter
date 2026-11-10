@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://diegopn.github.io/potoo-site/src/assets/images/language-interpreter-icon.svg" alt="Potoo IDE language interpreter icon" width="120" />
+  <img src="https://diegopn.github.io/potoo-site/src/assets/images/language-interpreter-icon.svg?v=1c651ca7" alt="Potoo IDE language interpreter icon" width="120" />
 </p>
 
 <h1 align="center">Potoo G-Portugol Interpreter</h1>
