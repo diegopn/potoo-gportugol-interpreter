@@ -19,6 +19,8 @@
   <img alt="CLI" src="https://img.shields.io/badge/CLI-6A4C93?style=for-the-badge">
 </p>
 
+Originally developed as part of the Potoo IDE project, this interpreter is an independent Rust software package intended to be distributed separately from the IDE. It can be embedded as a library in other Rust projects or run as a standalone command-line tool on Linux, macOS, and Windows.
+
 G-Portugol source files use `.gpt` and remain separate from Portugol 2.0 (`.por`), VisuAlg (`.alg`), and Potigol (`.poti`). The crate can be embedded in Rust applications.
 
 ## Original language references
