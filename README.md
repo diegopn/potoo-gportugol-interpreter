@@ -28,6 +28,13 @@ G-Portugol source files use `.gpt` and remain separate from Portugol 2.0 (`.por`
 
 These are the original language and implementation references for compatibility work. This repository provides an independent Rust implementation.
 
+## Original language references
+
+- [G-Portugol project site and online manual](https://gportugol.github.io/)
+- [Upstream GPT compiler and interpreter](https://github.com/gportugol/gpt)
+
+These are the original language and implementation references for compatibility work. This repository provides an independent Rust implementation.
+
 ## Language coverage
 
 The implementation follows the G-Portugol 1.4.0 manual and grammar for declarations, primitive types, expressions and conversions, integer division, `imprima`, typed `leia()`, conditionals, loops, vectors, matrices, and functions. It provides lexer, parser, type checking, runtime diagnostics with source locations, execution limits, cancellation, host-controlled input/output, and debugger events. The language defines `imprima` and `leia()` as intrinsic functions; Potoo also embeds an independent Rust implementation of the default `base.gpt` math library (`absoluto`, `arredonda`, `potencia`, and `raiz_quadrada`).
