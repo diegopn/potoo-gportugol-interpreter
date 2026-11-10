@@ -1,6 +1,32 @@
-# Potoo G-Portugol Interpreter
+<p align="center">
+  <img src="https://diegopn.github.io/potoo-site/src/assets/images/language-interpreter-icon.svg?v=1c651ca7" alt="Potoo IDE language interpreter icon" width="120" />
+</p>
 
-An independent Rust interpreter library for the G-Portugol 1.4.0 language. G-Portugol source files use the `.gpt` extension and remain separate from Portugol 2.0 (`.por`), VisuAlg (`.alg`), and Potigol (`.poti`). The crate can be embedded in Rust applications; it includes a standalone terminal command-line runner.
+<h1 align="center">Potoo G-Portugol Interpreter</h1>
+
+<p align="center">An independent Rust interpreter library and CLI for G-Portugol 1.4.0.</p>
+
+<p align="center">
+  <a href="https://github.com/diegopn/potoo-gportugol-interpreter/releases/latest">Download</a> ·
+  <a href="https://diegopn.github.io/potoo-site/">Website</a> ·
+  <a href="https://diegopn.github.io/potoo-site/manual/g-portugol/">User manual</a>
+</p>
+
+<p align="center">
+  <a href="https://www.rust-lang.org/"><img alt="Rust" src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white"></a>
+  <a href="https://doc.rust-lang.org/cargo/"><img alt="Cargo" src="https://img.shields.io/badge/Cargo-DEA584?style=for-the-badge&logo=rust&logoColor=white"></a>
+  <img alt="Rust library" src="https://img.shields.io/badge/Rust_library-4A86CF?style=for-the-badge">
+  <img alt="CLI" src="https://img.shields.io/badge/CLI-6A4C93?style=for-the-badge">
+</p>
+
+G-Portugol source files use `.gpt` and remain separate from Portugol 2.0 (`.por`), VisuAlg (`.alg`), and Potigol (`.poti`). The crate can be embedded in Rust applications.
+
+## Original language references
+
+- [G-Portugol project site and online manual](https://gportugol.github.io/)
+- [Upstream GPT compiler and interpreter](https://github.com/gportugol/gpt)
+
+These are the original language and implementation references for compatibility work. This repository provides an independent Rust implementation.
 
 ## Original language references
 
@@ -80,7 +106,17 @@ cargo test
 
 This crate is licensed under GPL-3.0-or-later. It is an independent implementation: it neither invokes nor bundles the upstream `gpt` executable and does not reuse upstream implementation code.
 
+## Support
+
+If this interpreter is useful in your work, you can support its continued development:
+
+<p align="left">
+  <a href="https://github.com/sponsors/diegopn"><img alt="Become a sponsor" src="https://img.shields.io/badge/Become_a_sponsor-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white"></a>
+</p>
+
 ## Project policies
+
+- [Code of conduct](CODE_OF_CONDUCT.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 
