@@ -1,0 +1,17 @@
+name: Interpreter quality
+
+on:
+  pull_request:
+    branches: [develop]
+  push:
+    branches: [develop]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    uses: diegopn/potoo-interpreter-quality-suite/.github/workflows/reusable-profile.yml@71fc87f693d2e17168a7cf2de44c387c105f107f
+    with:
+      profile: gportugol
+      suite_ref: 71fc87f693d2e17168a7cf2de44c387c105f107f
