@@ -92,7 +92,7 @@ The documented 1.4.0 language is the compatibility target. The upstream `gpt` ex
 
 The crate API supports GPT's multi-file source composition when the host supplies the main file and its function-only source files. The IDE currently sends the active `.gpt` document as a single source; it does not yet provide project-level module selection or source-aware navigation for external functions.
 
-The current prebuilt packages target Linux x86_64 (GNU), Windows x86_64 (MSVC), and Intel macOS (x86_64); this release has no Apple silicon package.
+The v0.1.1 release provides native prebuilt packages for Linux x86_64 (GNU), Windows x86_64 (MSVC), Intel macOS x86_64, and Apple silicon macOS arm64.
 
 ## Development
 
@@ -124,25 +124,32 @@ If this interpreter is useful in your work, you can support its continued develo
 
 ## Standalone command-line runner
 
-The `potoo-gportugol` command runs one source file without Potoo IDE. For example:
+The `potoo-gportugol` command runs one source file without Potoo IDE. Save this program as `example.gpt`:
+
+```gpt
+algoritmo exemplo; início imprima("Olá, G-Portugol!"); fim
+```
+
+Run it with:
 
 ```sh
 potoo-gportugol example.gpt
 ```
 
-The terminal runner provides standard input/output and does not provide an interactive debugger or module selection for external source files.
+The program prints `Olá, G-Portugol!`. The terminal runner provides standard input/output and does not provide an interactive debugger or module selection for external source files.
 
 ## Install a prebuilt runner
 
-Prebuilt binaries are published on the [GitHub Releases page](https://github.com/diegopn/potoo-gportugol-interpreter/releases). Choose a version and the package for your system there. Packages are currently available for Linux x86_64, Windows x86_64 (MSVC), and Intel macOS (x86_64). The current release does not include an Apple silicon (arm64) package.
+The v0.1.1 release provides native CLI packages for Linux x86_64 (GNU), Windows x86_64 (MSVC), Intel macOS x86_64, and Apple silicon macOS arm64. Download your platform's archive and `SHA256SUMS` from the [latest release](https://github.com/diegopn/potoo-gportugol-interpreter/releases), then run the commands below from the folder containing both files. Each archive contains `potoo-gportugol` (or `potoo-gportugol.exe` on Windows) and the repository license. Replace `example.gpt` with your source file; the release package does not include a sample file.
 
-Download only the package for your system and the `SHA256SUMS` file, and save both in the same folder. Before extracting or running the executable, compare the package's SHA-256 hash with its corresponding entry in `SHA256SUMS`. Run the commands below from that folder. Replace `example.gpt` with the path to a source file you want to run; the release package does not include a sample file.
+The terminal runner executes one source file with standard input/output. It does not provide an interactive debugger or module selection for external source files.
 
-### Linux x86_64
+### Linux x86_64 (GNU)
 
 ```sh
-asset=$(ls -1 potoo-gportugol-interpreter-v*-x86_64-unknown-linux-gnu.tar.gz | head -n 1)
-sha256sum "$asset" # compare with its line in SHA256SUMS
+set -euo pipefail
+asset="potoo-gportugol-interpreter-v0.1.1-x86_64-unknown-linux-gnu.tar.gz"
+grep -F "  $asset" SHA256SUMS | sha256sum --check -
 tar -xzf "$asset"
 mkdir -p "$HOME/.local/bin"
 install -m 755 "${asset%.tar.gz}/potoo-gportugol" "$HOME/.local/bin/potoo-gportugol"
@@ -152,25 +159,30 @@ potoo-gportugol example.gpt
 
 To keep the command available in new Linux sessions, add the `export PATH="$HOME/.local/bin:$PATH"` line to your shell profile.
 
-### Windows x86_64 (PowerShell)
+### Windows x86_64 (MSVC, PowerShell)
 
 ```powershell
-$archive = Get-ChildItem -Filter "potoo-gportugol-interpreter-v*-x86_64-pc-windows-msvc.zip" | Select-Object -First 1
-Get-FileHash $archive.FullName -Algorithm SHA256 # compare with the matching SHA256SUMS entry
-Expand-Archive $archive.FullName -DestinationPath .\potoo-gportugol
-$exe = Get-ChildItem .\potoo-gportugol -Filter "potoo-gportugol.exe" -Recurse | Select-Object -First 1
-& $exe.FullName .\example.gpt
+$archive = "potoo-gportugol-interpreter-v0.1.1-x86_64-pc-windows-msvc.zip"
+$line = Get-Content .\SHA256SUMS | Where-Object { $_.EndsWith("  $archive") } | Select-Object -First 1
+if (-not $line) { throw "No SHA256SUMS entry found for $archive" }
+$expected = ($line -split '\s+')[0]
+$actual = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+if ($actual -ne $expected) { throw "SHA-256 mismatch for $archive" }
+$installDir = Join-Path $env:USERPROFILE ".local\bin"
+New-Item -ItemType Directory -Force $installDir | Out-Null
+Expand-Archive -LiteralPath $archive -DestinationPath $installDir
+$exe = Join-Path $installDir "potoo-gportugol-interpreter-v0.1.1-x86_64-pc-windows-msvc\potoo-gportugol.exe"
+& $exe .\example.gpt
 ```
 
-To run `potoo-gportugol.exe` from another folder, add the directory containing the executable to your user `PATH`.
+To run `potoo-gportugol.exe` from any folder, add `$env:USERPROFILE\.local\bin\potoo-gportugol-interpreter-v0.1.1-x86_64-pc-windows-msvc` to your user `Path` environment variable in Windows Settings.
 
-### Intel macOS
-
-The published macOS package targets Intel Macs (x86_64). There is no prebuilt Apple silicon package in the current release.
+### Intel macOS x86_64
 
 ```sh
-asset=$(ls -1 potoo-gportugol-interpreter-v*-x86_64-apple-darwin.tar.gz | head -n 1)
-shasum -a 256 "$asset" # compare with its line in SHA256SUMS
+set -euo pipefail
+asset="potoo-gportugol-interpreter-v0.1.1-x86_64-apple-darwin.tar.gz"
+grep -F "  $asset" SHA256SUMS | shasum -a 256 -c -
 tar -xzf "$asset"
 mkdir -p "$HOME/.local/bin"
 install -m 755 "${asset%.tar.gz}/potoo-gportugol" "$HOME/.local/bin/potoo-gportugol"
@@ -178,15 +190,27 @@ export PATH="$HOME/.local/bin:$PATH"
 potoo-gportugol example.gpt
 ```
 
-Add the `export PATH="$HOME/.local/bin:$PATH"` line to `~/.zprofile` to keep the command available in future macOS sessions.
+### Apple silicon macOS arm64
 
+```sh
+set -euo pipefail
+asset="potoo-gportugol-interpreter-v0.1.1-aarch64-apple-darwin.tar.gz"
+grep -F "  $asset" SHA256SUMS | shasum -a 256 -c -
+tar -xzf "$asset"
+mkdir -p "$HOME/.local/bin"
+install -m 755 "${asset%.tar.gz}/potoo-gportugol" "$HOME/.local/bin/potoo-gportugol"
+export PATH="$HOME/.local/bin:$PATH"
+potoo-gportugol example.gpt
+```
+
+On macOS, add the `export PATH="$HOME/.local/bin:$PATH"` line to `~/.zprofile` to keep the command available in future sessions.
 
 ## Install from source
 
 With Rust 1.93 or later and network access, Cargo can install the command directly from its tagged source:
 
 ```sh
-cargo install --git https://github.com/diegopn/potoo-gportugol-interpreter.git --rev 795e262f4ac160b720266e149d8fc3e2cd916a1c --bin potoo-gportugol
+cargo install --git https://github.com/diegopn/potoo-gportugol-interpreter.git --tag v0.1.1 --bin potoo-gportugol
 ```
 
 ## Use as a Rust library

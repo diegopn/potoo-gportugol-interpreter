@@ -1,28 +1,15 @@
 name: Release
 
 on:
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
   push:
     tags:
       - "v*"
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: Release tag to build
-        required: true
-        type: string
-        default: v0.1.0
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
-    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     strategy:
       fail-fast: false
       matrix:
@@ -33,38 +20,48 @@ jobs:
             target: x86_64-pc-windows-msvc
           - runner: macos-15-intel
             target: x86_64-apple-darwin
+          - runner: macos-15
+            target: aarch64-apple-darwin
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.ref }}
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo test --all-targets
-      - run: cargo build --release --bin potoo-gportugol
+      - name: Verify tag matches package version
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          package_version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)"
+          expected_tag="v${package_version}"
+          if [[ "$RELEASE_TAG" != "$expected_tag" ]]; then
+            echo "Release tag $RELEASE_TAG does not match package version $expected_tag" >&2
+            exit 1
+          fi
+      - run: cargo test --locked --all-targets
+      - run: cargo build --release --locked --target ${{ matrix.target }} --bin potoo-gportugol
       - name: Package Unix archive
         if: runner.os != 'Windows'
         shell: bash
         run: |
           set -euo pipefail
-          version="${{ github.event.inputs.tag || github.ref_name }}"
-          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
-            version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)"
-          fi
+          version="${GITHUB_REF_NAME}"
           bundle="potoo-gportugol-interpreter-${version}-${{ matrix.target }}"
           mkdir -p "$bundle"
-          cp "target/release/potoo-gportugol" "$bundle/"
+          cp "target/${{ matrix.target }}/release/potoo-gportugol" "$bundle/"
+          cp LICENSE "$bundle/"
           tar -czf "$bundle.tar.gz" "$bundle"
       - name: Package Windows archive
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $version = "${{ github.event.inputs.tag || github.ref_name }}"
-          if ($env:GITHUB_EVENT_NAME -eq "pull_request") {
-            $version = (Select-String -Path Cargo.toml -Pattern '^version = "([^"]+)"').Matches[0].Groups[1].Value
-          }
+          $version = $env:GITHUB_REF_NAME
           $bundle = "potoo-gportugol-interpreter-$version-${{ matrix.target }}"
           New-Item -ItemType Directory -Force $bundle | Out-Null
-          Copy-Item "target/release/potoo-gportugol.exe" -Destination $bundle
+          Copy-Item "target/${{ matrix.target }}/release/potoo-gportugol.exe" -Destination $bundle
+          Copy-Item "LICENSE" -Destination $bundle
           Compress-Archive -Path $bundle -DestinationPath "$bundle.zip"
       - uses: actions/upload-artifact@v4
         with:
@@ -73,9 +70,11 @@ jobs:
           if-no-files-found: error
 
   publish:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -86,9 +85,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          tag="${{ github.event.inputs.tag || github.ref_name }}"
+          tag="${GITHUB_REF_NAME}"
           cd release-assets
           sha256sum *.tar.gz *.zip > SHA256SUMS
+          notes="Patch release $tag. Native G-Portugol CLI builds for Linux x86_64 GNU, Windows x86_64 MSVC, Intel macOS x86_64, and Apple silicon arm64 macOS. Each archive contains the executable and LICENSE. The standalone runner executes one source file and does not provide an interactive debugger or external module selection. See README.md for installation and CLI limitations; verify downloads with SHA256SUMS. GitHub source snapshots are separate from these binary packages."
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$tag" *.tar.gz *.zip SHA256SUMS \
               --repo "$GITHUB_REPOSITORY" \
@@ -97,5 +97,6 @@ jobs:
             gh release create "$tag" *.tar.gz *.zip SHA256SUMS \
               --repo "$GITHUB_REPOSITORY" \
               --title "G-Portugol interpreter $tag" \
-              --notes "Initial standalone binary release of the G-Portugol Rust interpreter and CLI. Supported targets: Linux x86_64 (GNU), Windows x86_64 (MSVC), and macOS Intel (x86_64). Apple silicon is not supported in this version. Each archive contains only the compiled CLI executable. See README.md for installation and usage; verify downloads with SHA256SUMS. GitHub source snapshots are separate from these binary packages."
+              --verify-tag \
+              --notes "$notes"
           fi
